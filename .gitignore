@@ -1,0 +1,40 @@
+# Ignore node_modules directory
+node_modules/
+
+# Ignore compiled JavaScript files
+out/
+*.js
+*.js.map
+
+# Ignore .vscode directory (local VSCode settings)
+.vscode/
+
+# Ignore TypeScript configuration files
+tsconfig.json
+tsconfig.tsbuildinfo
+
+# Ignore VSCode settings files
+settings.json
+
+# Ignore user-specific files
+*.code-workspace
+*.sublime-workspace
+
+# Ignore npm debug logs
+npm-debug.log
+
+# Ignore any local .env files
+.env
+
+# Ignore built extensions (use .vscodeignore to exclude files from your extension)
+.vsix
+
+# Ignore yarn lock file
+yarn.lock
+
+# Ignore VSCode extension package
+*.vsix
+
+*.log
+
+dist/
