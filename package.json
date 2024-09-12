@@ -1,16 +1,17 @@
 {
-  "name": "google-scholar-bibtex",
-  "displayName": "Google Scholar BibTeX",
+  "name": "bib-search",
+  "displayName": "Bib Search",
   "description": "Quickly populate your bibtex/biblatex references without leaving Visual Studio Code.",
   "repository": {
     "type": "git",
     "url": "https://github.com/PradyumnaShome/google-scholar-bibtex.git"
   },
-  "publisher": "Pradyumna Shome",
+  "publisher": "pradyumnashome",
   "author": {
     "name": "Pradyumna Shome",
     "email": "pradyumna.shome+googlescholarbibtex@gmail.com"
   },
+  "icon": "images/icon.png",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.81.0"
@@ -23,10 +24,20 @@
   "contributes": {
     "commands": [
       {
-        "command": "google-scholar-bibtex.search",
-        "title": "Google Scholar BibTeX: Search"
+        "command": "bib-search.search",
+        "title": "Bib Search"
       }
-    ]
+    ],
+    "configuration": {
+      "title": "Bib Search",
+      "properties": {
+        "bib-search.publicationDatabase": {
+          "type": ["DBLP", "Google Scholar"],
+          "default": "DBLP",
+          "description": "Which publication database to use for searching. DBLP data is higher quality since we use their API to search, but Google Scholar is more comprehensive, since it indexes non Computer Science venues."
+        }
+      }
+  }
   },
   "scripts": {
     "vscode:prepublish": "yarn run package",
@@ -50,13 +61,16 @@
     "glob": "^10.3.3",
     "mocha": "^10.2.0",
     "ts-loader": "^9.4.4",
-    "typescript": "^5.2.2",
-    "webpack": "^5.88.2",
+    "typescript": "^5.6.2",
+    "webpack": "^5.94.0",
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
+    "@types/xml2js": "^0.4.14",
     "axios": "^1.5.1",
     "bibtex-parser": "^0.0.0",
-    "cheerio": "^1.0.0-rc.12"
+    "cheerio": "^1.0.0",
+    "global": "^4.4.0",
+    "xml2js": "^0.6.2"
   }
 }

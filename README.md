@@ -1,9 +1,9 @@
-# Google Scholar BibTeX
+# Bib Search
 
 ## Features
 
-Google Scholar BibTeX is a bibliography management tool for scientists.
-Search for keywords, and have the BibTEX be automatically populated.
+Bib Search is a bibliography management tool for scientists.
+Search for keywords, and have the BibTeX entries be automatically populated.
 
 ## Requirements
 
@@ -12,7 +12,7 @@ If you have any requirements or dependencies, add a section describing those and
 ## Extension Settings
 
 ## Known Issues
-Currently, author lists and book titles (journals/conferences) have many typos and are incomplete due to the current strategy of parsing the search results page.
+Author lists and book titles (journals/conferences) have many typos and are incomplete for Google Scholar. DBLP is recommended.
 
 ## Release Notes
 
