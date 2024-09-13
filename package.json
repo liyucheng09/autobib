@@ -2,17 +2,21 @@
   "name": "bib-search",
   "displayName": "Bib Search",
   "description": "Quickly populate your bibtex/biblatex references without leaving Visual Studio Code.",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/PradyumnaShome/google-scholar-bibtex.git"
-  },
   "publisher": "pradyumnashome",
   "author": {
     "name": "Pradyumna Shome",
-    "email": "pradyumna.shome+googlescholarbibtex@gmail.com"
+    "email": "pradyumna.shome+bibsearch@gmail.com"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PradyumnaShome/bib-search.git"
+  },
+  "bugs": {
+    "url": "https://github.com/PradyumnaShome/bib-search/issues"
+  },
+  "license": "MIT",
   "icon": "images/icon.png",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "engines": {
     "vscode": "^1.81.0"
   },
