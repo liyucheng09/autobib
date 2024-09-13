@@ -34,7 +34,7 @@
         "bib-search.publicationDatabase": {
           "type": ["DBLP", "Google Scholar"],
           "default": "DBLP",
-          "description": "Which publication database to use for searching. DBLP data is higher quality since we use their API to search, but Google Scholar is more comprehensive, since it indexes non Computer Science venues."
+          "description": "Which publication database to use for searching. DBLP data is higher quality since we use their API to search, but Google Scholar is more comprehensive, since it indexes venues outside of computer science. Choose `DBLP` for DBLP, and `Google Scholar` for Google Scholar."
         }
       }
   }
@@ -68,7 +68,6 @@
   "dependencies": {
     "@types/xml2js": "^0.4.14",
     "axios": "^1.5.1",
-    "bibtex-parser": "^0.0.0",
     "cheerio": "^1.0.0",
     "global": "^4.4.0",
     "xml2js": "^0.6.2"

@@ -3,8 +3,6 @@
 import * as vscode from 'vscode';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
-import bibtexParser from 'bibtex-parser';
-import { parse } from 'path';
 import { parseString } from 'xml2js';
 
 interface Publication {
@@ -23,7 +21,6 @@ interface Publication {
  */
 async function fetchGoogleScholarHTML(query: string): Promise<string> {
 	const url = `https://scholar.google.com/scholar?hl=en&as_sdt=0%2C5&q=${encodeURIComponent(query)}`;
-	await vscode.window.showInformationMessage(`Fetching URL: ${url}.`);
 	try {
 		const response = await axios.get(url);
 		return response.data;
@@ -93,8 +90,8 @@ async function parseDBLPXML(xml: string) {
 	});
 
 	let hits = parsedXml.result.hits;
-	if (!hits || hits.length === 0 || hits[0].hit.length === 0) {
-		await vscode.window.showErrorMessage(`No results found for search query.`);
+	if (!hits || hits.length === 0 || !hits[0] || !hits[0].hit || hits[0].hit.length === 0) {
+		await vscode.window.showErrorMessage(`No results found.`);
 		return [];
 	}
 	hits = hits[0].hit;
@@ -122,7 +119,7 @@ async function parseDBLPXML(xml: string) {
 		if (info.doi && info.doi.length > 0) {
 			doi = info.doi[0];
 		}
-		
+
 		return {
 			title: info.title[0],
 			authors: authors,
@@ -200,7 +197,7 @@ let createQuickPickOptions = (searchResults: Publication[]): vscode.QuickPickIte
 let searchQueryHandler = async (searchQuery: string): Promise<void> => {
 	let searchResults = await searchPublicationDatabase(searchQuery);
 	let quickPickOptions = createQuickPickOptions(searchResults);
-	const selections: vscode.QuickPickItem[] | undefined = await vscode.window.showQuickPick(quickPickOptions, { placeHolder: "Select one or more publications. Bib entries will be inserted into the current file.", canPickMany: true });
+	const selections: vscode.QuickPickItem[] | undefined = await vscode.window.showQuickPick(quickPickOptions, { placeHolder: "Select the publications you'd like snippets for.", canPickMany: true });
 	if (selections === undefined || selections.length === 0) {
 		return;
 	}
