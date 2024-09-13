@@ -12,7 +12,7 @@
     "email": "pradyumna.shome+googlescholarbibtex@gmail.com"
   },
   "icon": "images/icon.png",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "engines": {
     "vscode": "^1.81.0"
   },
@@ -32,12 +32,15 @@
       "title": "Bib Search",
       "properties": {
         "bib-search.publicationDatabase": {
-          "type": ["DBLP", "Google Scholar"],
+          "type": [
+            "DBLP",
+            "Google Scholar"
+          ],
           "default": "DBLP",
           "description": "Which publication database to use for searching. DBLP data is higher quality since we use their API to search, but Google Scholar is more comprehensive, since it indexes venues outside of computer science. Choose `DBLP` for DBLP, and `Google Scholar` for Google Scholar."
         }
       }
-  }
+    }
   },
   "scripts": {
     "vscode:prepublish": "yarn run package",
