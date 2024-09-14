@@ -12,6 +12,7 @@ interface Publication {
 	booktitle: string,
 	pages: string | undefined,
 	doi: string | undefined,
+	type: string | undefined,
 }
 
 /**
@@ -43,6 +44,11 @@ async function parseGoogleScholarHTML(html: string) {
 		const booktitle = $(element).find('.gs_a').text().split("-")[1];
 		const pages = '';
 		const doi = $(element).find('.gs_ri a[href^="/scholar?oi=bibs&hl=en&cites="]').attr('href');
+
+		// Light filtering to remove empty or incomplete entries
+		if (title === '' || authors.length === 0 || year === '') {
+			return;
+		}
 		const publication: Publication = {
 			title: title,
 			authors: authors,
@@ -50,6 +56,7 @@ async function parseGoogleScholarHTML(html: string) {
 			booktitle: booktitle,
 			pages: pages,
 			doi: doi,
+			type: '',
 		};
 		publications.push(publication);
 	});
@@ -78,7 +85,6 @@ async function fetchDBLPXML(query: string): Promise<string> {
  * @returns 
  */
 async function parseDBLPXML(xml: string) {
-	const publications: any[] = [];
 	let parsedXml: any = await new Promise<any>((resolve, reject) => {
 		parseString(xml, async (err, result) => {
 			if (err) {
@@ -120,19 +126,26 @@ async function parseDBLPXML(xml: string) {
 			doi = info.doi[0];
 		}
 
+		let type = "";
+		if (info.type && info.type.length > 0) {
+			type = info.type[0];
+		}
+
 		return {
 			title: info.title[0],
 			authors: authors,
 			year: info.year[0],
 			booktitle: venue,
 			pages: pages,
-			doi: doi
+			doi: doi,
+			type: type,
 		};
 	});
 
 	const data = await Promise.all(dataPromises);
 	const filteredData = data.filter((entry: any) => entry !== undefined && entry !== null);
 
+	const publications: Publication[] = [];
 	filteredData.forEach((entry: any) => {
 		const title = entry.title;
 		const authors = entry.authors;
@@ -140,6 +153,7 @@ async function parseDBLPXML(xml: string) {
 		const booktitle = entry.booktitle;
 		const pages = entry.pages;
 		const doi = entry.doi;
+		const type = entry.type;
 		const publication: Publication = {
 			title: title,
 			authors: authors,
@@ -147,6 +161,7 @@ async function parseDBLPXML(xml: string) {
 			booktitle: booktitle,
 			pages: pages,
 			doi: doi,
+			type: type,
 		};
 		publications.push(publication);
 	});
@@ -176,19 +191,88 @@ let searchPublicationDatabase = async (searchQuery: string): Promise<Publication
 }
 
 /**
- * Returns a list of quick pick options for the user to select from, based on the pased in search results.
+ * Returns a list of quick pick options for the user to select from, based on the pased in search results. Applies some formatting to the publication data to make it more readable.
  * @param searchResults The search results from Google Scholar.
  * @returns 
  */
-let createQuickPickOptions = (searchResults: Publication[]): vscode.QuickPickItem[] => {
-	return searchResults.map((publication) => {
-		return {
-			label: `${publication.title}`,
-			description: `${publication.booktitle} ${publication.year}`,
-			detail: publication.authors.join(", "),
-		};
-	});
-}
+const createQuickPickOptions = (searchResults: Publication[]): vscode.QuickPickItem[] => {
+    const transformPublication = (publication: Publication): vscode.QuickPickItem => {
+        let displayTitle = publication.title;
+        let displayVenue = publication.booktitle;
+        if (displayTitle.length + displayVenue.length > 75) {
+            displayTitle = publication.title.substring(0, 60) + "...";
+            displayVenue = publication.booktitle.substring(0, 15);
+        }
+
+        const isAuthorListTooLong = publication.authors.join(", ").length > 80;
+        let displayAuthors = publication.authors.map((author: string) => {
+            let authorParts = author.split(" ");
+            if (authorParts.length === 1) {
+                return authorParts[0];
+            }
+            // Remove DBLP UUIDs from author names 
+            let lastName = authorParts[authorParts.length - 1];
+            if (lastName.match(/^\d+$/)) {
+                authorParts.pop();
+            }
+            // Abbreviate first names if the author list is too long
+            if (isAuthorListTooLong) {
+                return authorParts[0][0] + ". " + authorParts.slice(1).join(" ");
+            }
+            return authorParts.join(" ");
+        }).join(", ");
+
+        return {
+            label: displayTitle,
+            description: `${displayVenue} ${publication.year}`,
+            detail: displayAuthors,
+        };
+    };
+
+    const categorizePublications = (publications: Publication[]): Record<string, Publication[]> => {
+        const categories: Record<string, Publication[]> = {
+            "Conference and Workshop Papers": [],
+            "Journal Articles": [],
+            "Other Articles": []
+        };
+
+        publications.forEach(pub => {
+            if (pub.type?.toLowerCase().includes("conference")) {
+                categories["Conference and Workshop Papers"].push(pub);
+            } else if (pub.type?.toLowerCase().includes("journal")) {
+                categories["Journal Articles"].push(pub);
+            } else {
+                categories["Other Articles"].push(pub);
+            }
+        });
+
+        return categories;
+    };
+
+    const sortByYearAndTitle = (items: vscode.QuickPickItem[]): vscode.QuickPickItem[] => {
+        return items.sort((a, b) => {
+            const aYear = parseInt(a.description!.split(" ")[1]);
+            const bYear = parseInt(b.description!.split(" ")[1]);
+            if (aYear !== bYear) {
+                return bYear - aYear;
+            }
+            return a.label.localeCompare(b.label);
+        });
+    };
+
+    const categorizedItems = categorizePublications(searchResults);
+    let quickPickOptions: vscode.QuickPickItem[] = [];
+
+    ["Conference and Workshop Papers", "Journal Articles", "Other Articles"].forEach(category => {
+        if (categorizedItems[category].length > 0) {
+		    const publicationsTransformedToQuickPickItems = categorizedItems[category].map(transformPublication);
+            quickPickOptions.push({ label: category, kind: vscode.QuickPickItemKind.Separator });
+            quickPickOptions.push(...sortByYearAndTitle(publicationsTransformedToQuickPickItems));
+        }
+    });
+
+    return quickPickOptions;
+};
 
 /**
  * Handles the search query from the user and inserts the selected BibTeX entry into the active editor.
@@ -203,12 +287,27 @@ let searchQueryHandler = async (searchQuery: string): Promise<void> => {
 	}
 
 	for (let selection of selections) {
-		const publication = searchResults[quickPickOptions.indexOf(selection)];
-		const bibtex = `@inproceedings{${publication.authors[0].replace(" ", "_").toLowerCase()}${publication.year},
-	title={${publication.title}},
-	author={${publication.authors.join(" and ")}},
-	year={${publication.year}},
-	booktitle={${publication.booktitle}},
+		const originalPublication = searchResults[quickPickOptions.indexOf(selection)];
+		// Remove 4 digit numbers from author names
+		let filteredPublication = originalPublication;
+		filteredPublication.authors.map((author: string) => {
+			let authorParts = author.split(" ");
+			if (authorParts.length === 1) {
+				return authorParts[0];
+			}
+			// Remove DBLP UUIDs from author names
+			let lastName = authorParts[authorParts.length - 1];
+			if (lastName.match(/^\d+$/)) {
+				authorParts.pop();
+			}
+			return authorParts.join(" ");
+		});	
+
+		const bibtex = `@inproceedings{${filteredPublication.authors[0].replace(/ /g, "_").toLowerCase()}${filteredPublication.year},
+	title={${filteredPublication.title}},
+	author={${filteredPublication.authors.join(" and ")}},
+	year={${filteredPublication.year}},
+	booktitle={${filteredPublication.booktitle}},
 }\n`;
 		await vscode.window.activeTextEditor?.insertSnippet(new vscode.SnippetString(bibtex));
 	}
