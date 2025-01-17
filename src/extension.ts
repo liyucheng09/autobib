@@ -50,8 +50,12 @@ async function fetchDBLPXML(query: string): Promise<Publication[]> {
 }
 
 async function generateBibTeX(pub: Publication): Promise<string> {
-	const authors = pub.authors.join(' and ');
-	const firstAuthor = pub.authors[0].split(' ').pop()?.toLowerCase() || 'unknown';
+	const cleanAuthors = pub.authors.map(author => {
+		return author.replace(/\s+\d+$/, '');
+	});
+	
+	const authors = cleanAuthors.join(' and ');
+	const firstAuthor = cleanAuthors[0].split(' ').pop()?.toLowerCase() || 'unknown';
 	const citationKey = `${firstAuthor}${pub.year}`;
 	
 	let bib = `@article{${citationKey},\n`;
