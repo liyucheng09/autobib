@@ -1,18 +1,17 @@
 {
-  "name": "bib-search",
-  "displayName": "Bib Search",
+  "name": "autobib",
+  "displayName": "AutoBib",
   "description": "Quickly populate your bibtex/biblatex references without leaving Visual Studio Code.",
   "publisher": "pradyumnashome",
   "author": {
-    "name": "Pradyumna Shome",
-    "email": "pradyumna.shome+bibsearch@gmail.com"
+    "name": "Yucheng Li",
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/PradyumnaShome/bib-search.git"
+    "url": "git+https://github.com/PradyumnaShome/autobib.git"
   },
   "bugs": {
-    "url": "https://github.com/PradyumnaShome/bib-search/issues"
+    "url": "https://github.com/PradyumnaShome/autobib/issues"
   },
   "license": "MIT",
   "icon": "images/icon.png",
@@ -28,14 +27,14 @@
   "contributes": {
     "commands": [
       {
-        "command": "bib-search.search",
-        "title": "Bib Search"
+        "command": "autobib.processPaperList",
+        "title": "Process Paper List for BibTeX"
       }
     ],
     "configuration": {
-      "title": "Bib Search",
+      "title": "AutoBib",
       "properties": {
-        "bib-search.publicationDatabase": {
+        "autobib.publicationDatabase": {
           "type": [
             "DBLP",
             "Google Scholar"
@@ -58,17 +57,17 @@
     "test": "node ./out/test/runTest.js"
   },
   "devDependencies": {
-    "@types/mocha": "^10.0.2",
-    "@types/node": "18.x",
+    "@types/mocha": "^10.0.1",
+    "@types/node": "^16.x.x",
     "@types/vscode": "^1.81.0",
     "@typescript-eslint/eslint-plugin": "^6.7.3",
     "@typescript-eslint/parser": "^6.7.3",
     "@vscode/test-electron": "^2.3.4",
     "eslint": "^8.50.0",
-    "glob": "^10.3.3",
+    "glob": "^8.1.0",
     "mocha": "^10.2.0",
     "ts-loader": "^9.4.4",
-    "typescript": "^5.6.2",
+    "typescript": "^4.9.5",
     "webpack": "^5.94.0",
     "webpack-cli": "^5.1.4"
   },
