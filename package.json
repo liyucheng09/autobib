@@ -2,16 +2,16 @@
   "name": "autobib",
   "displayName": "AutoBib",
   "description": "Quickly populate your bibtex/biblatex references without leaving Visual Studio Code.",
-  "publisher": "pradyumnashome",
+  "publisher": "liyucheng09",
   "author": {
     "name": "Yucheng Li",
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/PradyumnaShome/autobib.git"
+    "url": "git+https://github.com/liyucheng09/autobib.git"
   },
   "bugs": {
-    "url": "https://github.com/PradyumnaShome/autobib/issues"
+    "url": "https://github.com/liyucheng09/autobib/issues"
   },
   "license": "MIT",
   "icon": "images/icon.png",
