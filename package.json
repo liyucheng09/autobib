@@ -4,7 +4,7 @@
   "description": "Quickly populate your bibtex/biblatex references without leaving Visual Studio Code.",
   "publisher": "liyucheng09",
   "author": {
-    "name": "Yucheng Li",
+    "name": "Yucheng Li"
   },
   "repository": {
     "type": "git",
@@ -28,7 +28,7 @@
     "commands": [
       {
         "command": "autobib.processPaperList",
-        "title": "Process Paper List for BibTeX"
+        "title": "AutoBib: Process Paper List for BibTeX"
       }
     ],
     "configuration": {

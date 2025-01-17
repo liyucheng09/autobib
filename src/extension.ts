@@ -133,7 +133,7 @@ async function processPaperList() {
 }
 
 export function activate(context: vscode.ExtensionContext) {
-	let processListDisposable = vscode.commands.registerCommand('bib-search.processPaperList', processPaperList);
+	let processListDisposable = vscode.commands.registerCommand('autobib.processPaperList', processPaperList);
 	context.subscriptions.push(processListDisposable);
 }
 

@@ -1,0 +1,32 @@
+# Source and test files
+src/**
+**/test/**
+.vscode-test/**
+
+# Development configs
+.vscode/**
+.gitignore
+tsconfig.json
+webpack.config.js
+yarn.lock
+vsc-extension-quickstart.md
+
+# Maps and source files
+**/*.ts
+**/*.map
+
+# Keep only the necessary dist files
+dist/**/*.map
+dist/**/*.LICENSE.txt
+dist/test/**
+!dist/extension.js
+
+# Dependencies
+node_modules/**
+
+# Keep these for marketplace
+!README.md
+!CHANGELOG.md
+!LICENSE.md
+!images/**
+!package.json
