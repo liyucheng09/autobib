@@ -85,7 +85,11 @@ async function processPaperList() {
 
 	const quickPick = vscode.window.createQuickPick();
 	quickPick.canSelectMany = true;
-	quickPick.items = papers.map(paper => ({ label: paper }));
+	quickPick.items = papers.map((paper, index) => ({ 
+		label: `${index + 1}. ${paper}`,
+		description: `Paper ${index + 1}`,
+		paper: paper // Store original paper title without number
+	}));
 	quickPick.title = 'Select papers to generate BibTeX entries';
 
 	quickPick.show();
@@ -108,18 +112,18 @@ async function processPaperList() {
 			const total = selectedPapers.length;
 
 			for (let i = 0; i < selectedPapers.length; i++) {
-				const paper = selectedPapers[i];
+				const paper = (selectedPapers[i] as any).paper; // Use the original paper title
 				progress.report({
-					message: `${i + 1}/${total}: ${paper.label}`,
+					message: `${i + 1}/${total}: ${paper}`,
 					increment: 100 / total
 				});
 
-				const publications = await fetchDBLPXML(paper.label);
+				const publications = await fetchDBLPXML(paper);
 				if (publications.length > 0) {
 					const bib = await generateBibTeX(publications[0]);
 					bibEntries.push(bib);
 				} else {
-					bibEntries.push(`% Could not find citation for: ${paper.label}\n\n`);
+					bibEntries.push(`% Could not find citation for: ${paper}\n\n`);
 				}
 			}
 
