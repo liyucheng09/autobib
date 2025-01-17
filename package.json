@@ -1,7 +1,7 @@
 {
   "name": "autobib",
   "displayName": "AutoBib",
-  "description": "Quickly populate your bibtex/biblatex references without leaving Visual Studio Code.",
+  "description": "Quickly retrieve bibtex entries for a paper list.",
   "publisher": "liyucheng09",
   "author": {
     "name": "Yucheng Li"
@@ -15,7 +15,7 @@
   },
   "license": "MIT",
   "icon": "images/icon.png",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "engines": {
     "vscode": "^1.81.0"
   },
