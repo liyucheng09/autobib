@@ -1,21 +1,15 @@
-# Bib Search
+# AutoBib
 
 ## Features
 
-Bib Search is a bibliography management tool for scientists.
-Search for keywords, and have the BibTeX entries be automatically populated.
+AutoBib is a bibliography management tool for scientists.
 
-## Requirements
+Given a list of paper titles, AutoBib will automatically generate the BibTeX entries for you.
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+![A list of paper titles](images/image.png)
 
-## Extension Settings
+![Choose which paper you want to have the BibTeX entry for](images/list.png)
 
-## Known Issues
-Author lists and book titles (journals/conferences) have many typos and are incomplete for Google Scholar. DBLP is recommended.
+The BibTeX entry will be generated in a new editor tab.
 
-## Release Notes
-
-### 0.0.1
-
-Initial release.
+![The BibTeX entry](images/entry.png)
