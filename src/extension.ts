@@ -16,37 +16,52 @@ const PUBLICATION_DATABASE_KEY = 'bib-search.publicationDatabase';
 const DBLP = 'DBLP';
 const GOOGLE_SCHOLAR = 'Google Scholar';
 
-async function fetchDBLPXML(query: string): Promise<Publication[]> {
+async function fetchDBLPXML(query: string, retries = 3): Promise<Publication[]> {
 	const url = `https://dblp.org/search/publ/api?q=${encodeURIComponent(query)}&format=xml`;
-	try {
-		const response = await axios.get(url);
-		const xml = response.data;
-		return new Promise((resolve, reject) => {
-			parseString(xml, (err, result) => {
-				if (err) {
-					reject(err);
-					return;
+	console.log(url);
+	
+	for (let attempt = 1; attempt <= retries; attempt++) {
+		try {
+			const response = await axios.get(url, {
+				timeout: 5000,
+				headers: {
+					'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36'
 				}
-				const hits = result.result?.hits?.[0]?.hit || [];
-				const publications = hits.map((hit: any) => {
-					const info = hit.info[0];
-					return {
-						title: info.title[0],
-						authors: info.authors[0].author.map((a: any) => a._),
-						year: info.year[0],
-						booktitle: info.venue?.[0] || '',
-						pages: info.pages?.[0],
-						doi: info.doi?.[0],
-						type: info.type?.[0]
-					};
-				});
-				resolve(publications);
 			});
-		});
-	} catch (error) {
-		console.error('DBLP search error:', error);
-		return [];
+			const xml = response.data;
+			return new Promise((resolve, reject) => {
+				parseString(xml, (err, result) => {
+					if (err) {
+						reject(err);
+						return;
+					}
+					const hits = result.result?.hits?.[0]?.hit || [];
+					const publications = hits.map((hit: any) => {
+						const info = hit.info[0];
+						return {
+							title: info.title[0],
+							authors: info.authors[0].author.map((a: any) => a._),
+							year: info.year[0],
+							booktitle: info.venue?.[0] || '',
+							pages: info.pages?.[0],
+							doi: info.doi?.[0],
+							type: info.type?.[0]
+						};
+					});
+					resolve(publications);
+				});
+			});
+		} catch (error: any) {
+			console.error(`DBLP search error (attempt ${attempt}/${retries}):`, error.message);
+			if (attempt === retries) {
+				vscode.window.showErrorMessage(`Failed to fetch from DBLP: ${error.message}. Please try again later.`);
+				return [];
+			}
+			// Wait before retrying (exponential backoff)
+			await new Promise(resolve => setTimeout(resolve, attempt * 1000));
+		}
 	}
+	return [];
 }
 
 async function generateBibTeX(pub: Publication): Promise<string> {
@@ -56,7 +71,8 @@ async function generateBibTeX(pub: Publication): Promise<string> {
 	
 	const authors = cleanAuthors.join(' and ');
 	const firstAuthor = cleanAuthors[0].split(' ').pop()?.toLowerCase() || 'unknown';
-	const citationKey = `${firstAuthor}${pub.year}`;
+	const firstTitleWord = pub.title.split(/\s+/)[0].toLowerCase().replace(/[^a-z0-9]/g, '');
+	const citationKey = `${firstAuthor}${pub.year}${firstTitleWord}`;
 	
 	let bib = `@article{${citationKey},\n`;
 	bib += `  title = {${pub.title}},\n`;
